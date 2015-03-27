@@ -53,9 +53,16 @@ module Lita
             source = FlowdockSource.new(
               user: user,
               room: flow,
-              message_id: message_id
+              message_id: message_id,
+              private_message: flow.nil?
             )
-            message = Message.new(robot, body, source)
+
+            tmp_body = body.dup
+            if flow.nil? && tmp_body !~ /#{robot.mention_name}/
+              tmp_body = "#{robot.mention_name} #{tmp_body}"
+            end
+
+            message = Message.new(robot, tmp_body, source)
             robot.receive(message)
           end
 

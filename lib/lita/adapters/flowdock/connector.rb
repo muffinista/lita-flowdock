@@ -4,6 +4,20 @@ require 'flowdock'
 require 'lita/adapters/flowdock/message_handler'
 require 'lita/adapters/flowdock/users_creator'
 
+class Flowdock::Client
+  def private_message(params)
+    raise InvalidParameterError, "Message must have :content" if blank?(params[:content])
+    raise InvalidParameterError, "Message must have :user_id" if blank?(params[:user_id])
+
+    user_id = params.delete(:user_id)
+
+    params = params.clone
+    event = "message"
+
+    post("private/#{user_id}/messages", params.merge(event: event))
+  end
+end
+
 module Lita
   module Adapters
     class Flowdock < Adapter
@@ -17,7 +31,7 @@ module Lita
           @client =
             flowdock_client || ::Flowdock::Client.new(api_token: api_token)
           @stream_url =
-            "https://#{api_token}@stream.flowdock.com/flows?filter=#{request_flows}"
+            "https://#{api_token}@stream.flowdock.com/flows?user=1&active=true&filter=#{request_flows}"
 
           UsersCreator.create_users(client.get('/users'))
         end
@@ -53,11 +67,18 @@ module Lita
 
         def send_messages(target, messages, message_id = nil)
           messages.each do |message|
-            client.chat_message(
-              flow: target,
-              content: message,
-              message: message_id
-            )
+            if target.is_a?(User)
+              client.private_message(
+                content: message,
+                user_id: target.id
+              )
+            else
+              client.chat_message(
+                content: message,
+                message: message_id,
+                flow: target
+               )
+            end
           end
         end
 

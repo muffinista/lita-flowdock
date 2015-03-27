@@ -35,9 +35,9 @@ module Lita
 
       def send_messages(target, messages)
         if config.thread_responses.eql?(:enabled)
-          connector.send_messages(target.room, messages, target.message_id)
+          connector.send_messages(target.room || target.user, messages, target.message_id)
         else
-          connector.send_messages(target.room, messages)
+          connector.send_messages(target.room || target.user, messages)
         end
       end
 
