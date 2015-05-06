@@ -44,7 +44,8 @@ describe Lita::Adapters::Flowdock::MessageHandler, lita: true do
         allow(Lita::FlowdockSource).to receive(:new).with(
           user: user,
           room: test_flow,
-          message_id: id
+          message_id: id,
+          private_message: false
         ).and_return(source)
         allow(Lita::Message).to receive(:new).with(
           robot, 'Hello World!', source).and_return(message)
@@ -196,7 +197,8 @@ describe Lita::Adapters::Flowdock::MessageHandler, lita: true do
         allow(Lita::FlowdockSource).to receive(:new).with(
           user: user,
           room: test_flow,
-          message_id: parent_id
+          message_id: parent_id,
+          private_message: false
         ).and_return(source)
         allow(Lita::Message).to receive(:new).with(
           robot, 'Lita: help', source).and_return(message)
