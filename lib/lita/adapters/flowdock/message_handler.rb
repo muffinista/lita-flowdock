@@ -49,13 +49,12 @@ module Lita
               message_id: private_message? ? data['id'] : data['thread']['initial_message']
             )
 
-#            tmp_body = body.dup
-#            if flow.nil? && tmp_body !~ /#{robot.mention_name}/
-#              tmp_body = "#{robot.mention_name} #{tmp_body}"
-#            end
+            tmp_body = body.dup
+            if flow.nil? && tmp_body !~ /#{robot.mention_name}/
+              tmp_body = "#{robot.mention_name} #{tmp_body}"
+            end
 
-
-            message = FlowdockMessage.new(robot, body, source, tags)
+            message = FlowdockMessage.new(robot, tmp_body, source, tags)
 
             robot.receive(message)
           end
