@@ -1,5 +1,6 @@
 require 'lita/adapters/flowdock/users_creator'
 require 'lita/source/flowdock_source'
+require 'lita/message/flowdock_message'
 
 module Lita
   module Adapters
@@ -40,38 +41,27 @@ module Lita
             data['tags']
           end
 
-          def parent_id
-            influx_tag = tags.select { |t| t =~ /influx:(\d+)/ }.first
-            influx_tag.split(':')[-1].to_i
-          end
-
-          def message_id
-            type == 'comment' ? parent_id : id
-          end
-
           def dispatch_message(user)
             source = FlowdockSource.new(
               user: user,
               room: flow,
-              message_id: message_id,
-              private_message: flow.nil?
+              private_message: private_message?,
+              message_id: private_message? ? data['id'] : data['thread']['initial_message']
             )
 
-            tmp_body = body.dup
-            if flow.nil? && tmp_body !~ /#{robot.mention_name}/
-              tmp_body = "#{robot.mention_name} #{tmp_body}"
-            end
+#            tmp_body = body.dup
+#            if flow.nil? && tmp_body !~ /#{robot.mention_name}/
+#              tmp_body = "#{robot.mention_name} #{tmp_body}"
+#            end
 
-            message = Message.new(robot, tmp_body, source)
+
+            message = FlowdockMessage.new(robot, body, source, tags)
+
             robot.receive(message)
           end
 
           def flow
             data['flow']
-          end
-
-          def id
-            data['id']
           end
 
           def from_self?(user)
@@ -108,6 +98,10 @@ module Lita
           def create_user(id)
             user = flowdock_client.get("/user/#{id}")
             UsersCreator.create_user(user)
+          end
+
+          def private_message?
+            data.has_key?('to')
           end
       end
     end
