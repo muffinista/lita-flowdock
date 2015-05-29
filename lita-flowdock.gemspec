@@ -14,11 +14,8 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-<<<<<<< HEAD
+
   spec.add_runtime_dependency "lita", "~> 4.3.0"
-=======
-  spec.add_runtime_dependency "lita", "~> 4.2"
->>>>>>> upstream/master
   spec.add_runtime_dependency "em-eventsource"
   spec.add_runtime_dependency "flowdock", ">= 0.6"
 
