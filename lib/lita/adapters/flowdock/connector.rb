@@ -58,7 +58,9 @@ module Lita
             source.error do |error|
               log.error(error)
               robot.trigger(:disconnected)
-              log.info('Disconnected')
+              #log.info('Disconnected')
+              log.info('Shutting down')              
+              shut_down
             end
 
             source.start
