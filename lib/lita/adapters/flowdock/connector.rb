@@ -73,7 +73,7 @@ module Lita
           params = {
             flow: target.room
           }
-          params.merge!(message_id: target.message_id) if thread
+          params.merge!(message_id: target.message_id) if thread & target.respond_to?(:message_id)
           messages.each do |message|
 
 #            if target.is_a?(User)
