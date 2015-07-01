@@ -35,6 +35,7 @@ module Lita
             "https://#{api_token}@stream.flowdock.com/flows?user=1&active=true&filter=#{request_flows}"
 
           UsersCreator.create_users(client.get('/users'))
+          store_flows
         end
 
         def run(url=stream_url, queue=nil)
@@ -122,6 +123,12 @@ module Lita
 
           def robot_id
             @robot_id ||= client.get('/user')['id']
+          end
+
+          def store_flows
+            client.get("/flows").each do |flow|
+              Lita.redis.set("flows/#{flow['parameterized_name']}", flow['id'])
+            end
           end
       end
     end
