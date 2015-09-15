@@ -48,7 +48,7 @@ module Lita
         connector.send_messages(
           target,
           messages,
-          config.thread_responses.eql?(:enabled)
+          config.thread_responses.eql?(:enabled) && target.respond_to?(:message_id)
         )
       end
 
